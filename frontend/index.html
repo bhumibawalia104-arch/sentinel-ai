@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENTINEL AI - Prompt Injection Firewall</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z' fill='%2322d3ee'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z" fill="#22d3ee"/><path d="m8.5 12 2.5 2.5L15.5 9" stroke="#0a1226" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><strong>Sentinel AI</strong><small>Prompt injection firewall</small></div>
+    </div>
+    <nav>
+  <a href="#/dashboard" data-page="dashboard">Overview</a>
+  <a href="#/scanner" data-page="scanner">Prompt scanner</a>
+  <a href="#/documents" data-page="documents">Document scanner</a>
+  <a href="#/simulator" data-page="simulator">Attack simulator</a>
+  <a href="#/chatbot" data-page="chatbot">Protected chatbot</a>
+  <a href="#/logs" data-page="logs">Security logs</a>
+  <a href="#/generator" data-page="generator">
+  <span>🛡️</span>
+  <span>Media Prompt Generator</span>
+</a>
+</nav>
+    <p class="side-note">A defense layer, not a guarantee. Scores are heuristic, not calibrated probabilities.</p>
+  </aside>
+
+  <main id="view" tabindex="-1"></main>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

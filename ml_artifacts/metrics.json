@@ -1,0 +1,86 @@
+{
+  "train_size": 97,
+  "test_size": 33,
+  "multiclass_accuracy": 0.667,
+  "binary_accuracy": 0.97,
+  "binary_precision": 1.0,
+  "binary_recall": 0.95,
+  "binary_f1": 0.974,
+  "binary_confusion_matrix": {
+    "labels": [
+      "benign",
+      "malicious"
+    ],
+    "matrix": [
+      [
+        13,
+        0
+      ],
+      [
+        1,
+        19
+      ]
+    ]
+  },
+  "multiclass_confusion_matrix": {
+    "labels": [
+      "benign",
+      "instruction_override",
+      "system_prompt_extraction",
+      "role_spoofing",
+      "data_exfiltration",
+      "encoded_obfuscation"
+    ],
+    "matrix": [
+      [
+        13,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        2,
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        1,
+        2,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        2,
+        0,
+        2,
+        0
+      ],
+      [
+        0,
+        0,
+        2,
+        0,
+        0,
+        2
+      ]
+    ]
+  },
+  "note": "Small hand-written dataset: treat these numbers as a demo, not a security guarantee."
+}
