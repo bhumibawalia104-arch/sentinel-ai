@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -42,13 +43,20 @@ def scan_prompt(
 
         try:
             # Generate Gemini answer
-            generated_answer = generate_response(
-                payload.prompt
+            generated_answer = generate_response(payload.prompt)
+
+            print(
+                "[SENTINEL] Gemini answer generated successfully",
+                flush=True
             )
 
             # STEP 3: Scan Gemini's answer
-            output_scan = scan_ai_output(
-                generated_answer
+            output_scan = scan_ai_output(generated_answer)
+
+            print(
+                "[SENTINEL] Output scan result:",
+                output_scan,
+                flush=True
             )
 
             # STEP 4: Show answer only if output is ALLOWED
@@ -58,7 +66,8 @@ def scan_prompt(
         except Exception as e:
             print(
                 f"[SENTINEL] AI output scan failed: "
-                f"{type(e).__name__}: {e}"
+                f"{type(e).__name__}: {e}",
+                flush=True
             )
 
     # STEP 5: Return both scan results

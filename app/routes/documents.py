@@ -2,7 +2,6 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.concurrency import run_in_threadpool
 
 from app.services.document_scanner import extract_document_text
-# from app.services.llm_service import explain_document_risk
 from app.detection.risk_engine import analyze
 from app.services.llm_service import (
     explain_document_risk,
@@ -12,7 +11,7 @@ from app.services.llm_service import (
 
 router = APIRouter(prefix="/api", tags=["Documents"])
 
-MAX_FILE_SIZE = MAX_FILE_SIZE = 50 * 1024 * 1024
+MAX_FILE_SIZE = 50 * 1024 * 1024
 
 @router.post("/scan-document")
 async def scan_document(file: UploadFile = File(...)):
@@ -72,7 +71,7 @@ async def scan_document(file: UploadFile = File(...)):
         )
         ai_explanation = None
 
-         # Step 6: Generate AI answer only for safe documents
+    # Step 6: Generate AI answer only for safe documents
     ai_answer = None
 
     if result.get("verdict") == "ALLOWED":

@@ -78,7 +78,7 @@ async function generateMedia() {
 
         <p><strong>Explanation:</strong> ${esc(result.explanation)}</p>
 
-        <div class="callout" style="margin-top:16px;">
+        <div class="callout ${VERDICT_CLASS[result.verdict] || "info"}" style="margin-top:16px;" role="alert">
           ${esc(result.message)}
         </div>
 
@@ -200,15 +200,25 @@ function chartDefaults() {
 
 /* ---------- Page: dashboard ---------- */
 function renderDashboardShell() {
-  view.innerHTML = `<div class="page-head"><h1>Security overview</h1><p>Live statistics from every scan stored in the local database.</p></div>
-    <div class="grid g-5" id="stat-cards"></div>
-    <div id="empty"></div>
-    <div class="grid g-2" style="margin-top:16px">
-      <div class="card"><h2>Attack categories</h2><div class="chart-box"><canvas id="ch-cat"></canvas></div></div>
-      <div class="card"><h2>Risk score distribution</h2><div class="chart-box"><canvas id="ch-risk"></canvas></div></div>
-    </div>
-    <div class="card" style="margin-top:16px"><h2>Daily activity (last 7 days)</h2><div class="chart-box"><canvas id="ch-daily"></canvas></div></div>
-    <div class="card" style="margin-top:16px"><h2>Recent security events</h2><div id="recent" class="table-wrap"></div></div>`;
+  view.innerHTML = `
+    <div class="page-head dashboard-head"><div><span class="eyebrow">SECURITY OPERATIONS / LIVE OVERVIEW</span><h1>Cyber Defense Command Center</h1><p>Real-time intelligence from your local SENTINEL AI detection engine.</p></div><span class="live-chip"><span class="status-dot"></span> MONITORING ACTIVE</span></div>
+    <div class="command-grid">
+      <section class="command-column">
+        <div class="card command-panel"><h2>Threat Overview</h2><div id="stat-cards" class="grid stat-grid"></div></div>
+        <div class="card command-panel"><h2>Attack Categories</h2><div class="chart-box"><canvas id="ch-cat"></canvas></div></div>
+        <div class="card command-panel"><h2>Risk Distribution</h2><div class="chart-box"><canvas id="ch-risk"></canvas></div></div>
+      </section>
+      <section class="command-column">
+        <div class="command-hero"><div class="radar-ring ring-one"></div><div class="radar-ring ring-two"></div><div class="shield-core"><svg viewBox="0 0 100 110" aria-hidden="true"><path d="M50 5 L90 20 V52 C90 79 70 96 50 105 C30 96 10 79 10 52 V20 Z" fill="rgba(0,217,255,.12)" stroke="currentColor" stroke-width="3"/><path d="M31 53 L45 67 L71 38" fill="none" stroke="#00e69a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="hero-status"><strong>SENTINEL AI</strong><span>DEFENSE LAYER ONLINE</span></div></div>
+        <div id="empty"></div>
+        <div class="card command-panel"><h2>Security Activity · Last 7 Days</h2><div class="chart-box"><canvas id="ch-daily"></canvas></div></div>
+      </section>
+      <section class="command-column">
+        <div class="card command-panel"><h2>Threat Detection Engine</h2><div class="engine-row"><span>Rule engine</span><strong class="ok">ENABLED</strong></div><div class="engine-row"><span>Risk analysis</span><strong class="ok">ENABLED</strong></div><div class="engine-row"><span>ML classification</span><strong class="muted">See scan status</strong></div></div>
+        <div class="card command-panel"><h2>Security Modules</h2><div class="module-links"><a href="#/scanner">↗ Prompt Scanner <small>Inspect incoming instructions</small></a><a href="#/documents">↗ Document Scanner <small>PDF, DOCX and TXT analysis</small></a><a href="#/simulator">↗ Attack Simulator <small>Protected vs unprotected</small></a><a href="#/generator">↗ Media Safety <small>Image and video prompt checks</small></a></div></div>
+        <div class="card command-panel"><h2>Recent Security Events</h2><div id="recent" class="table-wrap compact-events"></div></div>
+      </section>
+    </div>`;
 }
 
 async function loadDashboard() {
@@ -540,7 +550,6 @@ async function scanDocument() {
       );
     }
 
-    console.log("Document scanner API response:", data);
 
     const scan = data.scan || data;
 
@@ -590,6 +599,7 @@ async function scanDocument() {
     <h2>Document scan result</h2>
 
     <p class="muted">File: ${esc(file.name)}</p>
+    <div class="callout ${VERDICT_CLASS[scan.verdict] || "info"}" role="alert">${scan.verdict === "BLOCKED" ? "Document blocked: potential prompt-injection risk." : scan.verdict === "SUSPICIOUS" ? "Suspicious document: review before using its content." : "Document passed the preliminary security scan."}</div>
 
     ${scanCard(completeScan)}
     <div style="margin-top:24px">
@@ -775,7 +785,7 @@ function renderLogs() {
       <div id="log-table" class="table-wrap"></div></div>`;
   document.getElementById("filter").onchange = loadLogs; document.getElementById("refresh").onclick = loadLogs;
   document.getElementById("clear").onclick = async () => {
-    if (!confirm("Delete all scan history? This cannot be undone.")) return;
+    if (!window.confirm("Delete all scan history? This cannot be undone.")) return;
     const r = await safeCall(() => api("DELETE", "/api/logs")); if (r) { toast(`Deleted ${r.deleted} records`); loadLogs(); }
   };
 }
@@ -808,6 +818,6 @@ async function route() {
   }
 }
 window.addEventListener("hashchange", route);
-loadChartJs().then(() => { chartDefaults(); route(); });
+loadChartJs().catch(() => {}).finally(() => { chartDefaults(); route(); });
 
 
