@@ -2,49 +2,70 @@ import os
 import time
 import random
 
-from google import genai
-from google.genai import errors, types
+
+import os
+import time
+import random
 
 
 def generate_response(prompt: str) -> str:
-    api_key = os.getenv("GEMINI_API_KEY")
+    try:
+        from google import genai
+        from google.genai import errors, types
+    except ImportError as exc:
+        raise RuntimeError(
+            "Install Gemini support: python -m pip install google-genai"
+        ) from exc
 
+    api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY is not configured")
 
-    # Create Gemini client with 15-second timeout
+    model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+
     client = genai.Client(
-    api_key=api_key,
-    http_options=types.HttpOptions(timeout=60000)
-)
+        api_key=api_key,
+        http_options=types.HttpOptions(timeout=30000)
+    )
 
-    # Try up to 3 times
-    for attempt in range(3):
-        try:
-            response = client.models.generate_content(
-                model="gemini-3.5-flash-lite",
-                contents=prompt
-            )
+    try:
+        for attempt in range(3):
+            try:
+                response = client.models.generate_content(
+                    model=model,
+                    contents=prompt
+                )
 
-            return response.text or "No response generated." 
+                if response.text:
+                    return response.text
 
-        except errors.ServerError as e:
-            # Retry temporary Gemini server errors
-            if e.code not in (500, 502, 503, 504):
-                raise
+                raise RuntimeError(
+                    "Gemini returned no text. Check response safety filters."
+                )
 
-            if attempt == 2:
-                raise
+            except errors.ServerError as exc:
+                code = getattr(exc, "code", None)
 
-            wait_time = (2 ** attempt) + random.uniform(0, 1)
+                if code not in (500, 502, 503, 504):
+                    raise
 
-            print(
-                f"Gemini temporarily unavailable. "
-                f"Retrying in {wait_time:.1f}s",
-                flush=True
-            )
+                if attempt == 2:
+                    raise RuntimeError(
+                        "Gemini is temporarily unavailable after 3 attempts."
+                    ) from exc
 
-            time.sleep(wait_time)
+                delay = min(2 ** attempt + random.uniform(0, 1), 5)
+                print(
+                    f"[SENTINEL] Gemini HTTP {code}. "
+                    f"Retrying in {delay:.1f}s "
+                    f"(attempt {attempt + 1}/3)",
+                    flush=True
+                )
+                time.sleep(delay)
+
+    finally:
+        client.close()
+
 def explain_document_risk(document_text: str, scan_result: dict) -> str:
 
     verdict = scan_result.get("verdict", "UNKNOWN")
